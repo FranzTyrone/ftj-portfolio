@@ -429,11 +429,82 @@ body {
   .show-mobile {
     display: block !important;
   }
+
+  /* Hero: single column */
   .hero-grid {
     grid-template-columns: 1fr !important;
   }
+
+  /* Featured project: single column */
   .project-featured-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  /* Achievement card: stack photo on top of text */
+  .achievement-featured-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Achievement photo: shorter on mobile */
+  .achievement-photo-side {
+    min-height: 220px !important;
+  }
+
+  /* Achievement text side: less padding */
+  .achievement-text-side {
+    padding: 28px 22px !important;
+  }
+
+  /* Experience timeline: tighten dot positioning */
+  .timeline-dot {
+    left: -33px !important;
+  }
+
+  /* Contact cards: full width, no min-width */
+  .contact-card {
+    min-width: unset;
+    width: 100%;
+  }
+
+  /* Section padding reduction */
+  .section-pad {
+    padding-top: 64px !important;
+    padding-bottom: 64px !important;
+  }
+
+  /* Stat chips: smaller padding */
+  .stat-chip {
+    padding: 12px 14px;
+  }
+
+  /* Hero photo: smaller on mobile */
+  .hero-photo {
+    width: 220px !important;
+    height: 270px !important;
+  }
+
+  /* Hero photo badges: adjust positioning */
+  .hero-badge-bottom {
+    bottom: -14px !important;
+    left: 0 !important;
+  }
+  .hero-badge-top {
+    top: -10px !important;
+    right: 0 !important;
+  }
+
+  /* Skills grid: single column on very small screens */
+  .skills-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .skills-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .stat-chip {
+    padding: 10px 12px;
   }
 }
 

@@ -612,7 +612,7 @@ export default function Home() {
               />
 
               <div
-                className="animate-float"
+                className="animate-float hero-photo"
                 style={{
                   position: "relative",
                   width: 300,
@@ -644,7 +644,7 @@ export default function Home() {
 
               {/* Badge */}
               <div
-                className="card mono"
+                className="card mono hero-badge-bottom"
                 style={{
                   position: "absolute",
                   bottom: -18,
@@ -667,7 +667,7 @@ export default function Home() {
 
               {/* Tech floating tag */}
               <div
-                className="card mono"
+                className="card mono hero-badge-top"
                 style={{
                   position: "absolute",
                   top: -14,
@@ -696,6 +696,7 @@ export default function Home() {
       {/* ─── EXPERIENCE ───────────────────────── */}
       <section
         id="experience"
+        className="section-pad"
         style={{ padding: "96px 0", background: "var(--bg-card)" }}
       >
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
@@ -749,8 +750,9 @@ export default function Home() {
                   borderLeft: `2px solid ${exp.accent}40`,
                 }}
               >
-                {/* Timeline dot */}
+                {/* Timeline dot — uses timeline-dot class for mobile offset */}
                 <div
+                  className="timeline-dot"
                   style={{
                     position: "absolute",
                     left: -41,
@@ -846,7 +848,11 @@ export default function Home() {
       <div className="section-divider" />
 
       {/* ─── PROJECTS ─────────────────────────── */}
-      <section id="projects" className="grid-bg" style={{ padding: "96px 0" }}>
+      <section
+        id="projects"
+        className="grid-bg section-pad"
+        style={{ padding: "96px 0" }}
+      >
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
           <span
             className="eyebrow"
@@ -934,6 +940,7 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* project-featured-grid → collapses to 1-col on mobile */}
                 <div
                   style={{
                     display: "grid",
@@ -1117,6 +1124,7 @@ export default function Home() {
       {/* ─── SKILLS ───────────────────────────── */}
       <section
         id="skills"
+        className="section-pad"
         style={{
           padding: "96px 0",
           background: "var(--bg-card)",
@@ -1140,8 +1148,9 @@ export default function Home() {
           <h2 className="section-title">Skills</h2>
         </div>
 
-        {/* Category grid */}
+        {/* Category grid — skills-grid collapses to 1-col on small screens */}
         <div
+          className="skills-grid"
           style={{
             maxWidth: 1200,
             margin: "0 auto",
@@ -1295,7 +1304,10 @@ export default function Home() {
       <div className="section-divider" />
 
       {/* ─── EDUCATION ────────────────────────── */}
-      <section style={{ padding: "72px 0", background: "var(--bg)" }}>
+      <section
+        className="section-pad"
+        style={{ padding: "72px 0", background: "var(--bg)" }}
+      >
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
           <span
             className="eyebrow"
@@ -1402,6 +1414,7 @@ export default function Home() {
       {/* ─── ACHIEVEMENTS ─────────────────────── */}
       <section
         id="achievements"
+        className="section-pad"
         style={{ padding: "96px 0", background: "var(--bg-card)" }}
       >
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
@@ -1415,9 +1428,9 @@ export default function Home() {
             Achievements
           </h2>
 
-          {/* Featured achievement — photo + text card */}
+          {/* Featured achievement — achievement-featured-grid collapses on mobile */}
           <div
-            className="card card-accent"
+            className="card card-accent achievement-featured-grid"
             style={
               {
                 "--stripe": "linear-gradient(90deg, #f59e0b, #f97316)",
@@ -1430,7 +1443,10 @@ export default function Home() {
             }
           >
             {/* Photo side */}
-            <div style={{ position: "relative", minHeight: 380 }}>
+            <div
+              className="achievement-photo-side"
+              style={{ position: "relative", minHeight: 380 }}
+            >
               <Image
                 src="/achievements/stratedia-award.jpg"
                 alt="Receiving recognition award at Stratedia"
@@ -1457,6 +1473,7 @@ export default function Home() {
 
             {/* Text side */}
             <div
+              className="achievement-text-side"
               style={{
                 padding: "40px 36px",
                 display: "flex",
@@ -1639,7 +1656,7 @@ export default function Home() {
       {/* ─── CONTACT ──────────────────────────── */}
       <section
         id="contact"
-        className="grid-bg"
+        className="grid-bg section-pad"
         style={{ padding: "96px 0", background: "var(--bg-card)" }}
       >
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
