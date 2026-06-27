@@ -1,0 +1,1786 @@
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+
+const NAV = [
+  "About",
+  "Experience",
+  "Projects",
+  "Skills",
+  "Achievements",
+  "Contact",
+];
+
+const PROJECTS = [
+  {
+    name: "Jez Sync",
+    subtitle: "Real-Time Team Collaboration Platform",
+    featured: true,
+    stack: [
+      "Next.js",
+      "TypeScript",
+      "Fastify",
+      "PostgreSQL",
+      "Socket.io",
+      "WebRTC",
+      "mediasoup",
+      "Gemini API",
+    ],
+    desc: "Full-stack real-time team collaboration platform integrating group voice/video, live messaging, and an AI-enhanced project management board in a single workspace. Built as a Turborepo monorepo.",
+    highlights: [
+      "AI board generation via Google Gemini",
+      "Kanban + spreadsheet board engine",
+      "Group WebRTC SFU via mediasoup",
+      "Auth.js v5 session hardening",
+    ],
+    repo: "https://github.com/FranzTyrone/jez-sync",
+    accentColor: "#6366f1",
+    accentGrad: "linear-gradient(90deg, #6366f1, #38bdf8)",
+  },
+  {
+    name: "Pulse",
+    subtitle: "Anonymous Stranger Connection Platform",
+    featured: false,
+    stack: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "WebRTC",
+      "PostgreSQL",
+      "MapLibre GL",
+      "Upstash Redis",
+    ],
+    desc: "Real-time anonymous P2P platform where users appear as glowing dots on a live 3D globe — enabling text, video, and collaborative drawing with zero stored data.",
+    highlights: [
+      "WebRTC signaling rebuilt from scratch",
+      "Peer-to-peer collaborative canvas",
+      "9-vulnerability API hardening",
+      "3D globe with sonar-ring animations",
+    ],
+    repo: "https://github.com/FranzTyrone/pulse-assessment.git",
+    live: "https://pulse-assessment-kappa.vercel.app/",
+    accentColor: "#38bdf8",
+    accentGrad: "linear-gradient(90deg, #38bdf8, #6366f1)",
+  },
+  {
+    name: "Luzville Café Suite",
+    subtitle: "Integrated Café Management Ecosystem",
+    featured: false,
+    stack: ["Flutter", "Next.js", "Drift (SQLite)", "Prisma", "PostgreSQL"],
+    desc: "Full-stack café management system unifying a mobile POS with a centralized web portal, offline-first resilience, BIR-compliant fiscal engine, and hardware-serialized thermal printing.",
+    highlights: [
+      "Offline-first WAL-mode data layer",
+      "BIR-compliant 12% VAT engine",
+      "Bluetooth thermal print serialization",
+      "Real-time BI dashboards via Prisma",
+    ],
+    repo: "https://github.com/FranzTyrone/luzville-cafe-pos.git",
+    accentColor: "#4ade80",
+    accentGrad: "linear-gradient(90deg, #4ade80, #38bdf8)",
+  },
+  {
+    name: "Eastern CT Payment Hub",
+    subtitle: "Secure Financial Management App",
+    featured: false,
+    stack: ["Flutter", "Node.js", "Express.js", "MongoDB"],
+    desc: "Secure high-performance financial management app for Eastern Connecticut association — integrating with Ramco billing systems for real-time account monitoring.",
+    highlights: [
+      "Real-time billing data sync",
+      "Dark/Light mode adaptive UX",
+      "Timeframe-filtered activity history",
+      "Postman-validated API surface",
+    ],
+    repo: "https://github.com/FranzTyrone/Ecar-App",
+    accentColor: "#f59e0b",
+    accentGrad: "linear-gradient(90deg, #f59e0b, #ef4444)",
+  },
+];
+
+const SKILL_CATEGORIES = [
+  {
+    label: "Languages",
+    color: "#38bdf8",
+    icon: "{ }",
+    skills: [
+      {
+        name: "TypeScript",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+      },
+      {
+        name: "JavaScript",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+      },
+      {
+        name: "Python",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+      },
+      {
+        name: "Dart",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg",
+      },
+    ],
+  },
+  {
+    label: "Frontend",
+    color: "#6366f1",
+    icon: "◫",
+    skills: [
+      {
+        name: "Next.js",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg",
+      },
+      {
+        name: "React",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+      },
+      {
+        name: "Flutter",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg",
+      },
+      {
+        name: "Tailwind CSS",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg",
+      },
+      {
+        name: "Avada Theme",
+        logo: "https://cdn.worldvectorlogo.com/logos/avada-1.svg",
+      },
+    ],
+  },
+  {
+    label: "Backend",
+    color: "#4ade80",
+    icon: "⚙",
+    skills: [
+      {
+        name: "Node.js",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+      },
+      {
+        name: "Fastify",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastify/fastify-original.svg",
+      },
+      {
+        name: "Express.js",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg",
+      },
+      {
+        name: "Socket.io",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/socketio/socketio-original.svg",
+      },
+    ],
+  },
+  {
+    label: "Database",
+    color: "#f59e0b",
+    icon: "⬡",
+    skills: [
+      {
+        name: "PostgreSQL",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+      },
+      {
+        name: "MongoDB",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",
+      },
+      {
+        name: "Redis",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg",
+      },
+      {
+        name: "Prisma",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg",
+      },
+    ],
+  },
+  {
+    label: "DevOps & Cloud",
+    color: "#f472b6",
+    icon: "☁",
+    skills: [
+      {
+        name: "Docker",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",
+      },
+      {
+        name: "AWS",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg",
+      },
+      {
+        name: "Linux",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
+      },
+      {
+        name: "GitHub",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg",
+      },
+    ],
+  },
+  {
+    label: "AI & Tools",
+    color: "#a78bfa",
+    icon: "✦",
+    skills: [
+      {
+        name: "Claude AI",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/8/8a/Claude_AI_logo.svg",
+      },
+      {
+        name: "Gemini API",
+        logo: "https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg",
+      },
+      {
+        name: "Make.com",
+        logo: "https://cdn.worldvectorlogo.com/logos/make-logo.svg",
+      },
+      {
+        name: "WordPress",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-plain.svg",
+      },
+      {
+        name: "Figma",
+        logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+      },
+    ],
+  },
+];
+
+function TerminalCursor() {
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        width: 2,
+        height: "1em",
+        background: "#38bdf8",
+        marginLeft: 4,
+        verticalAlign: "middle",
+        animation: "blink 1s step-end infinite",
+      }}
+    />
+  );
+}
+
+export default function Home() {
+  const [activeNav, setActiveNav] = useState("About");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const featured = PROJECTS.filter((p) => p.featured);
+  const rest = PROJECTS.filter((p) => !p.featured);
+
+  return (
+    <div
+      style={{
+        background: "var(--bg)",
+        minHeight: "100vh",
+        overflowX: "hidden",
+      }}
+    >
+      {/* ─── NAV ─────────────────────────────── */}
+      <nav
+        className="glass-nav"
+        style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50 }}
+      >
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            padding: "0 24px",
+            height: 60,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Logo */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Image
+              src="/jeztech-logo.png"
+              alt="JezTech"
+              width={320}
+              height={90}
+              style={{ objectFit: "contain", height: "80px", width: "auto" }}
+            />
+          </div>
+
+          {/* Desktop links */}
+          <ul
+            className="hide-mobile"
+            style={{ display: "flex", gap: 32, listStyle: "none" }}
+          >
+            {NAV.map((n) => (
+              <li key={n}>
+                <a
+                  href={`#${n.toLowerCase()}`}
+                  onClick={() => setActiveNav(n)}
+                  className="mono"
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: activeNav === n ? "#38bdf8" : "#64748b",
+                    textDecoration: "none",
+                    letterSpacing: ".05em",
+                    transition: "color .2s",
+                    paddingBottom: 2,
+                    borderBottom:
+                      activeNav === n
+                        ? "1px solid #38bdf8"
+                        : "1px solid transparent",
+                  }}
+                >
+                  {n}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href="mailto:franztyrone072001@gmail.com"
+            className="btn-ghost hide-mobile"
+            style={{ fontSize: 12, padding: "7px 18px" }}
+          >
+            Hire Me →
+          </a>
+
+          {/* Hamburger */}
+          <button
+            className="show-mobile"
+            onClick={() => setMenuOpen(!menuOpen)}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "#64748b",
+              padding: 4,
+            }}
+          >
+            <svg
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              {menuOpen ? (
+                <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {menuOpen && (
+          <div
+            style={{
+              padding: "12px 24px 20px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 14,
+              borderTop: "1px solid rgba(56,189,248,.12)",
+            }}
+          >
+            {NAV.map((n) => (
+              <a
+                key={n}
+                href={`#${n.toLowerCase()}`}
+                onClick={() => setMenuOpen(false)}
+                className="mono"
+                style={{
+                  fontSize: 13,
+                  color: "#94a3b8",
+                  textDecoration: "none",
+                }}
+              >
+                {n}
+              </a>
+            ))}
+          </div>
+        )}
+      </nav>
+
+      {/* ─── HERO ─────────────────────────────── */}
+      <section
+        id="about"
+        className="grid-bg"
+        style={{
+          position: "relative",
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          paddingTop: 60,
+        }}
+      >
+        {/* Ambient orbs */}
+        <div
+          style={{
+            position: "absolute",
+            top: "15%",
+            left: "10%",
+            width: 500,
+            height: 500,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(37,99,235,.09) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "10%",
+            right: "5%",
+            width: 300,
+            height: 300,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(99,102,241,.07) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }}
+        />
+
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            padding: "80px 24px",
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns: "1fr 1.1fr",
+            gap: 56,
+            alignItems: "center",
+          }}
+          className="hero-grid fade-up"
+        >
+          {/* Left — Text */}
+          <div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                marginBottom: 20,
+              }}
+            >
+              <span className="eyebrow">
+                Computer Engineer · Software Developer
+              </span>
+            </div>
+
+            <h1
+              style={{
+                fontSize: "clamp(2.8rem, 6vw, 4.5rem)",
+                fontWeight: 900,
+                lineHeight: 1.05,
+                marginBottom: 24,
+                color: "#fff",
+              }}
+            >
+              Fran&apos;z Tyrone
+              <br />
+              <span
+                className="glitch-wrap gradient-text"
+                data-text="Jez De Ortega"
+                style={{ display: "inline-block" }}
+              >
+                Jez De Ortega
+              </span>
+            </h1>
+
+            <p
+              style={{
+                fontSize: 15,
+                lineHeight: 1.75,
+                marginBottom: 8,
+                color: "var(--soft)",
+                maxWidth: 460,
+              }}
+            >
+              Full-stack engineer obsessed with real-time systems, edge-case
+              engineering, and AI-augmented workflows — from Bluetooth thermal
+              printers to 3D globe P2P networks.
+            </p>
+
+            <p
+              className="mono"
+              style={{ fontSize: 12, color: "#38bdf8", marginBottom: 32 }}
+            >
+              📍 Philippines · Open to Remote
+              <TerminalCursor />
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 12,
+                marginBottom: 48,
+              }}
+            >
+              <a href="#projects" className="btn-primary">
+                View Projects
+              </a>
+              <a
+                href="https://github.com/FranzTyrone"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+              >
+                GitHub ↗
+              </a>
+              <a
+                href="https://linkedin.com/in/franztyrone"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+              >
+                LinkedIn ↗
+              </a>
+            </div>
+
+            {/* Stats row */}
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+              {[
+                { n: "4+", l: "Projects Shipped" },
+                { n: "2+", l: "Years Experience" },
+                { n: "10+", l: "Technologies" },
+              ].map(({ n, l }) => (
+                <div key={l} className="stat-chip">
+                  <span
+                    className="mono gradient-text"
+                    style={{ fontSize: 26, fontWeight: 800 }}
+                  >
+                    {n}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      color: "var(--muted)",
+                      letterSpacing: ".03em",
+                    }}
+                  >
+                    {l}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right — Photo */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ position: "relative" }}>
+              {/* Corner accents */}
+              {[
+                {
+                  top: -12,
+                  left: -12,
+                  borderTop: "2px solid #38bdf8",
+                  borderLeft: "2px solid #38bdf8",
+                  borderRadius: "6px 0 0 0",
+                },
+                {
+                  bottom: -12,
+                  right: -12,
+                  borderBottom: "2px solid #6366f1",
+                  borderRight: "2px solid #6366f1",
+                  borderRadius: "0 0 6px 0",
+                },
+              ].map((s, i) => (
+                <div
+                  key={i}
+                  style={{ position: "absolute", width: 36, height: 36, ...s }}
+                />
+              ))}
+
+              {/* Glow ring */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: 18,
+                  background: "rgba(56,189,248,.08)",
+                  transform: "scale(1.05)",
+                  filter: "blur(20px)",
+                }}
+              />
+
+              <div
+                className="animate-float"
+                style={{
+                  position: "relative",
+                  width: 300,
+                  height: 360,
+                  borderRadius: 18,
+                  overflow: "hidden",
+                  border: "1px solid rgba(56,189,248,.2)",
+                }}
+              >
+                <Image
+                  src="/profile.png"
+                  alt="Fran'z Tyrone Jez De Ortega"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                {/* Scan overlay */}
+                <div className="scan-overlay" />
+                {/* Bottom gradient */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(to top, rgba(3,9,20,.6) 0%, transparent 55%)",
+                  }}
+                />
+              </div>
+
+              {/* Badge */}
+              <div
+                className="card mono"
+                style={{
+                  position: "absolute",
+                  bottom: -18,
+                  left: -20,
+                  padding: "10px 16px",
+                  borderRadius: 10,
+                  border: "1px solid rgba(56,189,248,.3)",
+                  backdropFilter: "blur(10px)",
+                }}
+              >
+                <p style={{ fontSize: 11, fontWeight: 700, color: "#38bdf8" }}>
+                  @ Stratedia
+                </p>
+                <p
+                  style={{ fontSize: 10, color: "var(--muted)", marginTop: 2 }}
+                >
+                  Sep 2024 – Jun 2026
+                </p>
+              </div>
+
+              {/* Tech floating tag */}
+              <div
+                className="card mono"
+                style={{
+                  position: "absolute",
+                  top: -14,
+                  right: -20,
+                  padding: "8px 14px",
+                  borderRadius: 10,
+                  border: "1px solid rgba(245,158,11,.25)",
+                  backdropFilter: "blur(10px)",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: "var(--amber)",
+                  }}
+                >
+                  🛠 Full-Stack
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── EXPERIENCE ───────────────────────── */}
+      <section
+        id="experience"
+        style={{ padding: "96px 0", background: "var(--bg-card)" }}
+      >
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+          <span
+            className="eyebrow"
+            style={{ display: "block", marginBottom: 10 }}
+          >
+            Work History
+          </span>
+          <h2 className="section-title" style={{ marginBottom: 56 }}>
+            Experience
+          </h2>
+
+          <div style={{ position: "relative", paddingLeft: 28 }}>
+            <div className="timeline-rail" />
+
+            {[
+              {
+                role: "Software Developer",
+                org: "Stratedia",
+                period: "Sep 2024 – Jun 2026",
+                accent: "#38bdf8",
+                items: [
+                  "Built responsive websites with WordPress, Avada Theme, HTML, CSS, and JavaScript",
+                  "Implemented SEO strategies improving search engine rankings and organic traffic",
+                  "Leveraged Make.com and AI-driven automation for end-to-end client content pipelines",
+                  "Created Python scripts converting content into Fusion Builder code for automation",
+                  "Integrated TownTopper maps for location-based SEO and user engagement",
+                  "Managed product imagery on AWS for e-commerce clients",
+                ],
+              },
+              {
+                role: "IT Support & Training",
+                org: "Ubiquity",
+                period: "Jun 2023 – Jul 2023",
+                accent: "#6366f1",
+                items: [
+                  "Provided technical support and troubleshooting for computers, printers, and devices",
+                  "Conducted IT training sessions for staff and customers",
+                  "Managed incoming support calls and emails from clients",
+                ],
+              },
+            ].map((exp, idx) => (
+              <div
+                key={idx}
+                className="card"
+                style={{
+                  padding: "28px 28px 28px 32px",
+                  marginBottom: idx === 0 ? 32 : 0,
+                  position: "relative",
+                  borderLeft: `2px solid ${exp.accent}40`,
+                }}
+              >
+                {/* Timeline dot */}
+                <div
+                  style={{
+                    position: "absolute",
+                    left: -41,
+                    top: 28,
+                    width: 18,
+                    height: 18,
+                    borderRadius: "50%",
+                    border: `2px solid ${exp.accent}`,
+                    background: "var(--bg)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 7,
+                      height: 7,
+                      borderRadius: "50%",
+                      background: exp.accent,
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: 12,
+                    marginBottom: 16,
+                  }}
+                >
+                  <div>
+                    <h3
+                      style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}
+                    >
+                      {exp.role}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 700,
+                        marginTop: 3,
+                        color: exp.accent,
+                      }}
+                    >
+                      {exp.org}
+                    </p>
+                  </div>
+                  <span className="tech-badge">{exp.period}</span>
+                </div>
+
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
+                >
+                  {exp.items.map((item, i) => (
+                    <li
+                      key={i}
+                      style={{
+                        display: "flex",
+                        gap: 10,
+                        fontSize: 14,
+                        color: "var(--soft)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: exp.accent,
+                          flexShrink: 0,
+                          marginTop: 1,
+                        }}
+                      >
+                        ›
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* ─── PROJECTS ─────────────────────────── */}
+      <section id="projects" className="grid-bg" style={{ padding: "96px 0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+          <span
+            className="eyebrow"
+            style={{ display: "block", marginBottom: 10 }}
+          >
+            Selected Work
+          </span>
+          <h2 className="section-title" style={{ marginBottom: 56 }}>
+            Projects
+          </h2>
+
+          {/* Featured card */}
+          {featured.map((p) => (
+            <div
+              key={p.name}
+              className="card card-accent"
+              style={
+                {
+                  "--stripe": p.accentGrad,
+                  marginBottom: 24,
+                  padding: 0,
+                  overflow: "hidden",
+                } as React.CSSProperties
+              }
+            >
+              <div style={{ padding: "32px 32px 28px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: 16,
+                    marginBottom: 20,
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        marginBottom: 8,
+                      }}
+                    >
+                      <span className="tag-amber">★ Featured</span>
+                      <span
+                        className="eyebrow"
+                        style={{ color: p.accentColor }}
+                      >
+                        {p.subtitle}
+                      </span>
+                    </div>
+                    <h3
+                      style={{ fontSize: 26, fontWeight: 800, color: "#fff" }}
+                    >
+                      {p.name}
+                    </h3>
+                  </div>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    {p.live && (
+                      <a
+                        href={p.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary"
+                        style={{
+                          fontSize: 12,
+                          padding: "8px 16px",
+                          background: `linear-gradient(135deg, ${p.accentColor}, #1e40af)`,
+                        }}
+                      >
+                        Live ↗
+                      </a>
+                    )}
+                    <a
+                      href={p.repo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-ghost"
+                      style={{ fontSize: 12, padding: "8px 16px" }}
+                    >
+                      Repo ↗
+                    </a>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1.2fr 1fr",
+                    gap: 32,
+                  }}
+                  className="project-featured-grid"
+                >
+                  <div>
+                    <p
+                      style={{
+                        fontSize: 14,
+                        lineHeight: 1.75,
+                        color: "var(--soft)",
+                        marginBottom: 20,
+                      }}
+                    >
+                      {p.desc}
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {p.stack.map((t) => (
+                        <span key={t} className="tech-badge">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="eyebrow" style={{ marginBottom: 12 }}>
+                      Key Highlights
+                    </p>
+                    <ul
+                      style={{
+                        listStyle: "none",
+                        padding: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                      }}
+                    >
+                      {p.highlights.map((h, i) => (
+                        <li key={i} className="highlight-item">
+                          <div className="dot" />
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* 3-col rest */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: 20,
+            }}
+          >
+            {rest.map((p) => (
+              <div
+                key={p.name}
+                className="card card-accent"
+                style={
+                  {
+                    "--stripe": p.accentGrad,
+                    padding: 24,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 14,
+                  } as React.CSSProperties
+                }
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <div>
+                    <p
+                      className="eyebrow"
+                      style={{ color: p.accentColor, marginBottom: 4 }}
+                    >
+                      {p.subtitle}
+                    </p>
+                    <h3
+                      style={{ fontSize: 17, fontWeight: 700, color: "#fff" }}
+                    >
+                      {p.name}
+                    </h3>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {p.live && (
+                      <a
+                        href={p.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-ghost"
+                        style={{ fontSize: 11, padding: "5px 11px" }}
+                      >
+                        Live ↗
+                      </a>
+                    )}
+                    <a
+                      href={p.repo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-ghost"
+                      style={{
+                        fontSize: 11,
+                        padding: "5px 11px",
+                        color: "var(--muted)",
+                        borderColor: "rgba(255,255,255,.1)",
+                      }}
+                    >
+                      Repo ↗
+                    </a>
+                  </div>
+                </div>
+
+                <p
+                  style={{
+                    fontSize: 13,
+                    lineHeight: 1.65,
+                    color: "var(--muted)",
+                  }}
+                >
+                  {p.desc}
+                </p>
+
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 7,
+                  }}
+                >
+                  {p.highlights.map((h, i) => (
+                    <li
+                      key={i}
+                      className="highlight-item"
+                      style={{ fontSize: 12 }}
+                    >
+                      <div
+                        className="dot"
+                        style={{ background: p.accentColor }}
+                      />
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 7,
+                    marginTop: "auto",
+                    paddingTop: 8,
+                    borderTop: "1px solid var(--border)",
+                  }}
+                >
+                  {p.stack.map((t) => (
+                    <span key={t} className="tech-badge">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SKILLS ───────────────────────────── */}
+      <section
+        id="skills"
+        style={{
+          padding: "96px 0",
+          background: "var(--bg-card)",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            padding: "0 24px",
+            marginBottom: 56,
+          }}
+        >
+          <span
+            className="eyebrow"
+            style={{ display: "block", marginBottom: 8 }}
+          >
+            Tech Stack
+          </span>
+          <h2 className="section-title">Skills</h2>
+        </div>
+
+        {/* Category grid */}
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            padding: "0 24px",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: 20,
+            marginBottom: 56,
+          }}
+        >
+          {SKILL_CATEGORIES.map((cat) => (
+            <div
+              key={cat.label}
+              className="card"
+              style={{
+                padding: "24px 24px 20px",
+                borderColor: `${cat.color}20`,
+              }}
+            >
+              {/* Category header */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  marginBottom: 20,
+                  paddingBottom: 14,
+                  borderBottom: `1px solid ${cat.color}20`,
+                }}
+              >
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: `${cat.color}12`,
+                    border: `1px solid ${cat.color}30`,
+                    flexShrink: 0,
+                  }}
+                >
+                  <span style={{ fontSize: 14, color: cat.color }}>
+                    {cat.icon}
+                  </span>
+                </div>
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: cat.color,
+                    letterSpacing: ".1em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {cat.label}
+                </span>
+              </div>
+
+              {/* Skill chips */}
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 10 }}
+              >
+                {cat.skills.map((s) => (
+                  <div
+                    key={s.name}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "8px 12px",
+                      borderRadius: 8,
+                      background: `${cat.color}06`,
+                      border: `1px solid ${cat.color}14`,
+                      transition: "all .2s",
+                    }}
+                    className="skill-row-chip"
+                  >
+                    <div
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 6,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(255,255,255,.04)",
+                        flexShrink: 0,
+                        position: "relative",
+                      }}
+                    >
+                      <img
+                        src={s.logo}
+                        alt={s.name}
+                        width={18}
+                        height={18}
+                        style={{ objectFit: "contain" }}
+                        onError={(e) => {
+                          const el = e.target as HTMLImageElement;
+                          el.style.display = "none";
+                          const fallback = el.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = "flex";
+                        }}
+                      />
+                      <span
+                        style={{
+                          display: "none",
+                          fontSize: 10,
+                          fontWeight: 800,
+                          color: cat.color,
+                          fontFamily: "JetBrains Mono, monospace",
+                          position: "absolute",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          inset: 0,
+                        }}
+                      >
+                        {s.name.slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontFamily: '"Space Grotesk", sans-serif',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: "var(--soft)",
+                      }}
+                    >
+                      {s.name}
+                    </span>
+                    <div
+                      style={{
+                        marginLeft: "auto",
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: cat.color,
+                        opacity: 0.5,
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* ─── EDUCATION ────────────────────────── */}
+      <section style={{ padding: "72px 0", background: "var(--bg)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+          <span
+            className="eyebrow"
+            style={{ display: "block", marginBottom: 8 }}
+          >
+            Academic Background
+          </span>
+          <h2 className="section-title" style={{ marginBottom: 36 }}>
+            Education
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: 20,
+            }}
+          >
+            {[
+              {
+                school: "University of St. La Salle – Bacolod",
+                degree: "B.S. Computer Engineering",
+                period: "2020 – 2024",
+                color: "#38bdf8",
+              },
+              {
+                school: "Fellowship Baptist College",
+                degree: "Senior High School",
+                period: "2014 – 2020",
+                color: "#6366f1",
+              },
+            ].map((e) => (
+              <div
+                key={e.school}
+                className="card"
+                style={{
+                  padding: 24,
+                  display: "flex",
+                  gap: 16,
+                  alignItems: "flex-start",
+                }}
+              >
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: `${e.color}15`,
+                    border: `1px solid ${e.color}30`,
+                  }}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    fill="none"
+                    stroke={e.color}
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path
+                      strokeLinecap="round"
+                      d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 style={{ fontWeight: 700, fontSize: 15, color: "#fff" }}>
+                    {e.school}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      marginTop: 4,
+                      color: e.color,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {e.degree}
+                  </p>
+                  <p
+                    className="mono"
+                    style={{
+                      fontSize: 11,
+                      marginTop: 8,
+                      color: "var(--muted)",
+                    }}
+                  >
+                    {e.period}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* ─── ACHIEVEMENTS ─────────────────────── */}
+      <section
+        id="achievements"
+        style={{ padding: "96px 0", background: "var(--bg-card)" }}
+      >
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+          <span
+            className="eyebrow"
+            style={{ display: "block", marginBottom: 10 }}
+          >
+            Recognition
+          </span>
+          <h2 className="section-title" style={{ marginBottom: 56 }}>
+            Achievements
+          </h2>
+
+          {/* Featured achievement — photo + text card */}
+          <div
+            className="card card-accent"
+            style={
+              {
+                "--stripe": "linear-gradient(90deg, #f59e0b, #f97316)",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 0,
+                overflow: "hidden",
+                marginBottom: 24,
+              } as React.CSSProperties
+            }
+          >
+            {/* Photo side */}
+            <div style={{ position: "relative", minHeight: 380 }}>
+              <Image
+                src="/achievements/stratedia-award.jpg"
+                alt="Receiving recognition award at Stratedia"
+                fill
+                style={{ objectFit: "cover", objectPosition: "center top" }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(90deg, transparent 40%, var(--bg-card) 100%)",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(to top, rgba(8,15,31,.7) 0%, transparent 55%)",
+                }}
+              />
+            </div>
+
+            {/* Text side */}
+            <div
+              style={{
+                padding: "40px 36px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: 16,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  flexWrap: "wrap",
+                }}
+              >
+                <span className="tag-amber">🏆 Award</span>
+                <span className="eyebrow" style={{ color: "#f59e0b" }}>
+                  Stratedia · 2025
+                </span>
+              </div>
+
+              <h3
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  color: "#fff",
+                  lineHeight: 1.2,
+                }}
+              >
+                1 Year Dedication Award
+              </h3>
+
+              <p
+                style={{ fontSize: 14, lineHeight: 1.75, color: "var(--soft)" }}
+              >
+                Presented by Stratedia in recognition of one full year of
+                committed service and consistent dedication as a Software
+                Developer — building websites, automating workflows, and
+                delivering quality work for clients across the organization.
+              </p>
+
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                }}
+              >
+                {[
+                  "1 year of consistent service at Stratedia",
+                  "Committed to client delivery & team collaboration",
+                  "Recognized at official Stratedia award ceremony",
+                ].map((item, i) => (
+                  <li key={i} className="highlight-item">
+                    <div className="dot" style={{ background: "#f59e0b" }} />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <div
+                style={{
+                  marginTop: 4,
+                  paddingTop: 16,
+                  borderTop: "1px solid var(--border)",
+                  display: "flex",
+                  gap: 12,
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "rgba(245,158,11,.12)",
+                    border: "1px solid rgba(245,158,11,.3)",
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>🎖</span>
+                </div>
+                <div>
+                  <p
+                    style={{ fontSize: 12, fontWeight: 700, color: "#f59e0b" }}
+                  >
+                    Stratedia
+                  </p>
+                  <p
+                    className="mono"
+                    style={{ fontSize: 10, color: "var(--muted)" }}
+                  >
+                    www.stratedia.com
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Supplemental achievement chips */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {[
+              {
+                icon: "🎓",
+                label: "B.S. Computer Engineering",
+                sub: "University of St. La Salle – Bacolod · 2024",
+                color: "#38bdf8",
+              },
+              {
+                icon: "💡",
+                label: "Real-Time Systems Builder",
+                sub: "WebRTC, mediasoup, Socket.io production apps",
+                color: "#6366f1",
+              },
+              {
+                icon: "⚡",
+                label: "4+ Shipped Applications",
+                sub: "From mobile POS to AI-augmented platforms",
+                color: "#4ade80",
+              },
+            ].map((a) => (
+              <div
+                key={a.label}
+                className="card"
+                style={{
+                  padding: "20px 22px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                }}
+              >
+                <div
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 10,
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: `${a.color}10`,
+                    border: `1px solid ${a.color}25`,
+                  }}
+                >
+                  <span style={{ fontSize: 20 }}>{a.icon}</span>
+                </div>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>
+                    {a.label}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 11,
+                      marginTop: 3,
+                      color: "var(--muted)",
+                    }}
+                  >
+                    {a.sub}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* ─── CONTACT ──────────────────────────── */}
+      <section
+        id="contact"
+        className="grid-bg"
+        style={{ padding: "96px 0", background: "var(--bg-card)" }}
+      >
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+          <span
+            className="eyebrow"
+            style={{ display: "block", marginBottom: 10 }}
+          >
+            Get In Touch
+          </span>
+          <h2 className="section-title" style={{ marginBottom: 12 }}>
+            Contact
+          </h2>
+          <p
+            style={{
+              fontSize: 14,
+              color: "var(--muted)",
+              marginBottom: 44,
+              maxWidth: 440,
+            }}
+          >
+            Open to new opportunities, collaborations, and interesting
+            engineering problems.
+          </p>
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+            {[
+              {
+                icon: "✉",
+                label: "Email",
+                value: "franztyrone072001@gmail.com",
+                href: "mailto:franztyrone072001@gmail.com",
+                color: "#38bdf8",
+              },
+              {
+                icon: "in",
+                label: "LinkedIn",
+                value: "linkedin.com/in/franztyrone",
+                href: "https://linkedin.com/in/franztyrone",
+                color: "#6366f1",
+              },
+              {
+                icon: "⌥",
+                label: "GitHub",
+                value: "github.com/FranzTyrone",
+                href: "https://github.com/FranzTyrone",
+                color: "#4ade80",
+              },
+            ].map((c) => (
+              <a
+                key={c.label}
+                href={c.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-card"
+              >
+                <div
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 9,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: `${c.color}14`,
+                    border: `1px solid ${c.color}30`,
+                    flexShrink: 0,
+                  }}
+                >
+                  <span
+                    className="mono"
+                    style={{ fontSize: 13, fontWeight: 700, color: c.color }}
+                  >
+                    {c.icon}
+                  </span>
+                </div>
+                <div>
+                  <p
+                    className="mono"
+                    style={{
+                      fontSize: 10,
+                      color: "var(--muted)",
+                      marginBottom: 3,
+                      letterSpacing: ".08em",
+                    }}
+                  >
+                    {c.label}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: "var(--bright)",
+                    }}
+                  >
+                    {c.value}
+                  </p>
+                </div>
+                <svg
+                  style={{ marginLeft: "auto", opacity: 0.3 }}
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke={c.color}
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FOOTER ───────────────────────────── */}
+      <footer
+        style={{
+          padding: "28px 24px",
+          textAlign: "center",
+          borderTop: "1px solid rgba(56,189,248,.08)",
+        }}
+      >
+        <p className="mono" style={{ fontSize: 11, color: "#1e3a5f" }}>
+          © 2026 Fran&apos;z Tyrone L. Jez De Ortega — Built with Next.js
+        </p>
+      </footer>
+
+      <style>{`
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes marquee-ltr { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes marquee-rtl { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+        .skill-row-chip:hover { background: rgba(255,255,255,.06) !important; border-color: rgba(255,255,255,.15) !important; }
+        .skill-row-chip:hover span { color: #e2e8f0 !important; }
+        .skill-chip:hover { background: rgba(56,189,248,.14) !important; border-color: rgba(56,189,248,.45) !important; }
+        .skill-chip:hover span { color: #38bdf8 !important; }
+        .skill-chip-indigo:hover { background: rgba(99,102,241,.14) !important; border-color: rgba(99,102,241,.45) !important; }
+        .skill-chip-indigo:hover span { color: #818cf8 !important; }
+      `}</style>
+    </div>
+  );
+}

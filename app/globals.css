@@ -1,0 +1,445 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  --bg: #030914;
+  --bg-card: #080f1f;
+  --bg-card2: #0b1528;
+  --border: #1a3a6b;
+  --border-hi: #2a5499;
+
+  --sky: #38bdf8;
+  --blue: #3b82f6;
+  --indigo: #6366f1;
+  --amber: #f59e0b;
+  --green: #4ade80;
+  --muted: #64748b;
+  --soft: #94a3b8;
+  --bright: #e2e8f0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--bright);
+  font-family: "Space Grotesk", sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── SCROLLBAR ────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #1d4ed8;
+  border-radius: 3px;
+}
+
+/* ─── GRID BG ──────────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ─── NAV ──────────────────────────────────────── */
+.glass-nav {
+  background: rgba(3, 9, 20, 0.82);
+  backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+}
+
+/* ─── CARDS ────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s,
+    transform 0.25s;
+}
+.card:hover {
+  border-color: var(--border-hi);
+  box-shadow:
+    0 0 32px rgba(56, 189, 248, 0.1),
+    0 8px 40px rgba(0, 0, 0, 0.5);
+  transform: translateY(-4px);
+}
+
+/* ─── PROJECT CARD ACCENT STRIPE ───────────────── */
+.card-accent {
+  position: relative;
+  overflow: hidden;
+}
+.card-accent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--stripe, linear-gradient(90deg, var(--sky), var(--indigo)));
+}
+
+/* ─── TYPOGRAPHY ───────────────────────────────── */
+.mono {
+  font-family: "JetBrains Mono", monospace;
+}
+
+.eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sky);
+}
+
+.section-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.gradient-text {
+  background: linear-gradient(
+    130deg,
+    var(--sky) 0%,
+    var(--blue) 50%,
+    var(--indigo) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.amber-text {
+  color: var(--amber);
+}
+
+/* ─── BADGES ───────────────────────────────────── */
+.tech-badge {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: rgba(56, 189, 248, 0.07);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  color: var(--sky);
+  white-space: nowrap;
+}
+
+.tag-amber {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--amber);
+}
+
+/* ─── BUTTONS ──────────────────────────────────── */
+.btn-primary {
+  padding: 11px 26px;
+  border-radius: 8px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  box-shadow:
+    0 4px 20px rgba(37, 99, 235, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(37, 99, 235, 0.5);
+}
+
+.btn-ghost {
+  padding: 11px 26px;
+  border-radius: 8px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--sky);
+  background: transparent;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-ghost:hover {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: var(--sky);
+}
+
+/* ─── LIVE DOT ─────────────────────────────────── */
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
+  animation: live-ping 2s infinite;
+}
+@keyframes live-ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+/* ─── HERO GLITCH NAME ─────────────────────────── */
+.glitch-wrap {
+  position: relative;
+  display: inline-block;
+}
+.glitch-wrap::before,
+.glitch-wrap::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  overflow: hidden;
+}
+.glitch-wrap::before {
+  color: var(--sky);
+  clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+  transform: translateX(-3px);
+  animation: glitch-a 4s infinite steps(1);
+  opacity: 0.6;
+}
+.glitch-wrap::after {
+  color: var(--amber);
+  clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+  transform: translateX(3px);
+  animation: glitch-b 4s infinite steps(1);
+  opacity: 0.45;
+}
+@keyframes glitch-a {
+  0%,
+  90%,
+  100% {
+    transform: translateX(-3px);
+    clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+  }
+  92% {
+    transform: translateX(3px);
+    clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%);
+  }
+  95% {
+    transform: translateX(-1px);
+    clip-path: polygon(0 55%, 100% 55%, 100% 65%, 0 65%);
+  }
+}
+@keyframes glitch-b {
+  0%,
+  90%,
+  100% {
+    transform: translateX(3px);
+    clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+  }
+  92% {
+    transform: translateX(-3px);
+    clip-path: polygon(0 70%, 100% 70%, 100% 90%, 0 90%);
+  }
+  95% {
+    transform: translateX(1px);
+    clip-path: polygon(0 25%, 100% 25%, 100% 45%, 0 45%);
+  }
+}
+
+/* ─── FLOAT ANIMATION ──────────────────────────── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+/* ─── FADE UP ───────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fadeUp 0.7s ease forwards;
+}
+
+/* ─── SCAN LINE ─────────────────────────────────── */
+.scan-overlay {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.04) 3px,
+    rgba(0, 0, 0, 0.04) 4px
+  );
+  z-index: 2;
+}
+
+/* ─── TIMELINE ──────────────────────────────────── */
+.timeline-rail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--sky), transparent);
+}
+
+/* ─── STAT CHIP ─────────────────────────────────── */
+.stat-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+/* ─── SKILL MARQUEE ─────────────────────────────── */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 28s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* ─── CONTACT CARD ──────────────────────────────── */
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: all 0.25s;
+  min-width: 260px;
+}
+.contact-card:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.12);
+  transform: translateY(-3px);
+}
+
+/* ─── HIGHLIGHT LIST ────────────────────────────── */
+.highlight-item {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  align-items: flex-start;
+}
+.highlight-item .dot {
+  flex-shrink: 0;
+  margin-top: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+/* ─── SECTION DIVIDER ───────────────────────────── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border) 30%,
+    var(--border) 70%,
+    transparent
+  );
+  margin: 0;
+}
+
+/* ─── RESPONSIVE ────────────────────────────────── */
+.hide-mobile {
+  display: flex;
+}
+.show-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  .show-mobile {
+    display: block !important;
+  }
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .project-featured-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
