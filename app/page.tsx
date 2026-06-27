@@ -1451,6 +1451,8 @@ export default function Home() {
                 src="/achievements/stratedia-award.jpg"
                 alt="Receiving recognition award at Stratedia"
                 fill
+                priority
+                loading="eager"
                 style={{ objectFit: "cover", objectPosition: "center top" }}
               />
               <div
