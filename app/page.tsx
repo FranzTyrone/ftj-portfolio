@@ -745,6 +745,7 @@ export default function Home() {
 
           {/* Right — Photo HUD */}
           <div
+            className="hero-photo-col"
             style={{
               display: "flex",
               justifyContent: "center",

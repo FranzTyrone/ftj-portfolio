@@ -452,6 +452,11 @@ body {
     gap: 48px !important;
   }
 
+  /* Move photo above text on mobile */
+  .hero-photo-col {
+    order: -1;
+  }
+
   /* Center the HUD photo on mobile */
   .hero-hud-wrapper {
     width: 220px !important;
