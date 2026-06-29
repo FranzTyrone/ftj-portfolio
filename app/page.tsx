@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const NAV = [
   "About",
@@ -96,10 +96,12 @@ const PROJECTS = [
   },
 ];
 
+const RAZER_GREEN = "#44D62C";
+
 const SKILL_CATEGORIES = [
   {
     label: "Languages",
-    color: "#38bdf8",
+    color: RAZER_GREEN,
     icon: "{ }",
     skills: [
       {
@@ -122,7 +124,7 @@ const SKILL_CATEGORIES = [
   },
   {
     label: "Frontend",
-    color: "#6366f1",
+    color: RAZER_GREEN,
     icon: "◫",
     skills: [
       {
@@ -149,7 +151,7 @@ const SKILL_CATEGORIES = [
   },
   {
     label: "Backend",
-    color: "#4ade80",
+    color: RAZER_GREEN,
     icon: "⚙",
     skills: [
       {
@@ -172,7 +174,7 @@ const SKILL_CATEGORIES = [
   },
   {
     label: "Database",
-    color: "#f59e0b",
+    color: RAZER_GREEN,
     icon: "⬡",
     skills: [
       {
@@ -195,7 +197,7 @@ const SKILL_CATEGORIES = [
   },
   {
     label: "DevOps & Cloud",
-    color: "#f472b6",
+    color: RAZER_GREEN,
     icon: "☁",
     skills: [
       {
@@ -218,7 +220,7 @@ const SKILL_CATEGORIES = [
   },
   {
     label: "AI & Tools",
-    color: "#a78bfa",
+    color: RAZER_GREEN,
     icon: "✦",
     skills: [
       {
@@ -252,10 +254,179 @@ function TerminalCursor() {
         display: "inline-block",
         width: 2,
         height: "1em",
-        background: "#38bdf8",
+        background: RAZER_GREEN,
         marginLeft: 4,
         verticalAlign: "middle",
         animation: "blink 1s step-end infinite",
+      }}
+    />
+  );
+}
+
+/* ─── CIRCUIT CANVAS ─────────────────────────────── */
+type Segment = { x1: number; y1: number; x2: number; y2: number };
+type Pulse = {
+  seg: Segment;
+  t: number; // 0..1 progress
+  speed: number;
+};
+
+function CircuitCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const GRID = 60;
+    let segments: Segment[] = [];
+    let pulses: Pulse[] = [];
+    let rafId = 0;
+    let lastPulseTime = 0;
+
+    function buildCircuit(w: number, h: number) {
+      segments = [];
+      const cols = Math.ceil(w / GRID) + 1;
+      const rows = Math.ceil(h / GRID) + 1;
+
+      // node existence map (random pruning)
+      const nodes: boolean[][] = Array.from({ length: rows }, () =>
+        Array.from({ length: cols }, () => Math.random() > 0.35),
+      );
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (!nodes[r][c]) continue;
+          const x = c * GRID;
+          const y = r * GRID;
+          // right neighbor
+          if (c + 1 < cols && nodes[r][c + 1] && Math.random() > 0.4) {
+            segments.push({ x1: x, y1: y, x2: x + GRID, y2: y });
+          }
+          // down neighbor
+          if (r + 1 < rows && nodes[r + 1][c] && Math.random() > 0.4) {
+            segments.push({ x1: x, y1: y, x2: x, y2: y + GRID });
+          }
+        }
+      }
+    }
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas!.offsetWidth;
+      const h = canvas!.offsetHeight;
+      canvas!.width = w * dpr;
+      canvas!.height = h * dpr;
+      ctx!.scale(dpr, dpr);
+      buildCircuit(w, h);
+    }
+
+    function spawnPulse() {
+      if (segments.length === 0) return;
+      const seg = segments[Math.floor(Math.random() * segments.length)];
+      pulses.push({ seg, t: 0, speed: 0.004 + Math.random() * 0.006 });
+    }
+
+    function draw(ts: number) {
+      const w = canvas!.offsetWidth;
+      const h = canvas!.offsetHeight;
+      ctx!.clearRect(0, 0, w, h);
+
+      // idle circuit lines
+      ctx!.strokeStyle = "rgba(68,214,44,0.09)";
+      ctx!.lineWidth = 1;
+      for (const s of segments) {
+        ctx!.beginPath();
+        ctx!.moveTo(s.x1, s.y1);
+        ctx!.lineTo(s.x2, s.y2);
+        ctx!.stroke();
+      }
+
+      // nodes as tiny dots
+      ctx!.fillStyle = "rgba(68,214,44,0.15)";
+      const seen = new Set<string>();
+      for (const s of segments) {
+        for (const [px, py] of [
+          [s.x1, s.y1],
+          [s.x2, s.y2],
+        ]) {
+          const key = `${px},${py}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            ctx!.beginPath();
+            ctx!.arc(px, py, 2, 0, Math.PI * 2);
+            ctx!.fill();
+          }
+        }
+      }
+
+      // spawn pulses ~every 220ms
+      if (ts - lastPulseTime > 220) {
+        spawnPulse();
+        if (Math.random() > 0.6) spawnPulse(); // occasional double
+        lastPulseTime = ts;
+      }
+
+      // draw & advance pulses
+      pulses = pulses.filter((p) => p.t <= 1);
+      for (const p of pulses) {
+        const px = p.seg.x1 + (p.seg.x2 - p.seg.x1) * p.t;
+        const py = p.seg.y1 + (p.seg.y2 - p.seg.y1) * p.t;
+
+        // glow aura
+        const grd = ctx!.createRadialGradient(px, py, 0, px, py, 14);
+        grd.addColorStop(0, "rgba(68,214,44,0.55)");
+        grd.addColorStop(1, "rgba(68,214,44,0)");
+        ctx!.fillStyle = grd;
+        ctx!.beginPath();
+        ctx!.arc(px, py, 14, 0, Math.PI * 2);
+        ctx!.fill();
+
+        // bright core dot
+        ctx!.fillStyle = "#44D62C";
+        ctx!.beginPath();
+        ctx!.arc(px, py, 2.5, 0, Math.PI * 2);
+        ctx!.fill();
+
+        // trailing lit segment
+        ctx!.strokeStyle = `rgba(68,214,44,${0.45 * (1 - p.t)})`;
+        ctx!.lineWidth = 1.5;
+        ctx!.beginPath();
+        ctx!.moveTo(p.seg.x1, p.seg.y1);
+        ctx!.lineTo(px, py);
+        ctx!.stroke();
+
+        p.t += p.speed;
+      }
+
+      rafId = requestAnimationFrame(draw);
+    }
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+    resize();
+    rafId = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        opacity: 1,
       }}
     />
   );
@@ -317,14 +488,15 @@ export default function Home() {
                   style={{
                     fontSize: 12,
                     fontWeight: 600,
-                    color: activeNav === n ? "#38bdf8" : "#64748b",
+                    color:
+                      activeNav === n ? RAZER_GREEN : "rgba(68,214,44,0.45)",
                     textDecoration: "none",
                     letterSpacing: ".05em",
                     transition: "color .2s",
                     paddingBottom: 2,
                     borderBottom:
                       activeNav === n
-                        ? "1px solid #38bdf8"
+                        ? `1px solid ${RAZER_GREEN}`
                         : "1px solid transparent",
                   }}
                 >
@@ -350,7 +522,7 @@ export default function Home() {
               background: "none",
               border: "none",
               cursor: "pointer",
-              color: "#64748b",
+              color: "rgba(68,214,44,0.55)",
               padding: 4,
             }}
           >
@@ -378,7 +550,7 @@ export default function Home() {
               display: "flex",
               flexDirection: "column",
               gap: 14,
-              borderTop: "1px solid rgba(56,189,248,.12)",
+              borderTop: `1px solid rgba(68,214,44,0.12)`,
             }}
           >
             {NAV.map((n) => (
@@ -389,7 +561,7 @@ export default function Home() {
                 className="mono"
                 style={{
                   fontSize: 13,
-                  color: "#94a3b8",
+                  color: RAZER_GREEN,
                   textDecoration: "none",
                 }}
               >
@@ -410,8 +582,12 @@ export default function Home() {
           display: "flex",
           alignItems: "center",
           paddingTop: 60,
+          overflow: "hidden",
         }}
       >
+        {/* Electrical circuit animation */}
+        <CircuitCanvas />
+
         {/* Ambient orbs */}
         <div
           style={{
@@ -422,7 +598,7 @@ export default function Home() {
             height: 500,
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, rgba(37,99,235,.09) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(68,214,44,.06) 0%, transparent 70%)",
             pointerEvents: "none",
           }}
         />
@@ -435,7 +611,7 @@ export default function Home() {
             height: 300,
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, rgba(99,102,241,.07) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(68,214,44,.04) 0%, transparent 70%)",
             pointerEvents: "none",
           }}
         />
@@ -450,6 +626,8 @@ export default function Home() {
             gridTemplateColumns: "1fr 1.1fr",
             gap: 56,
             alignItems: "center",
+            position: "relative",
+            zIndex: 1,
           }}
           className="hero-grid fade-up"
         >
@@ -504,9 +682,9 @@ export default function Home() {
 
             <p
               className="mono"
-              style={{ fontSize: 12, color: "#38bdf8", marginBottom: 32 }}
+              style={{ fontSize: 12, color: RAZER_GREEN, marginBottom: 32 }}
             >
-              📍 Philippines · Open to Remote
+              Philippines · Open to Remote
               <TerminalCursor />
             </p>
 
@@ -567,7 +745,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right — Photo */}
+          {/* Right — Photo HUD */}
           <div
             style={{
               display: "flex",
@@ -575,51 +753,125 @@ export default function Home() {
               alignItems: "center",
             }}
           >
-            <div style={{ position: "relative" }}>
-              {/* Corner accents */}
-              {[
-                {
-                  top: -12,
-                  left: -12,
-                  borderTop: "2px solid #38bdf8",
-                  borderLeft: "2px solid #38bdf8",
-                  borderRadius: "6px 0 0 0",
-                },
-                {
-                  bottom: -12,
-                  right: -12,
-                  borderBottom: "2px solid #6366f1",
-                  borderRight: "2px solid #6366f1",
-                  borderRadius: "0 0 6px 0",
-                },
-              ].map((s, i) => (
-                <div
-                  key={i}
-                  style={{ position: "absolute", width: 36, height: 36, ...s }}
-                />
-              ))}
+            <div style={{ position: "relative", width: 300, height: 300 }}>
+              {/* Outer rotating dashed ring */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: -22,
+                  borderRadius: "50%",
+                  border: "1px dashed rgba(68,214,44,0.22)",
+                  animation: "hud-spin 22s linear infinite",
+                  pointerEvents: "none",
+                }}
+              />
 
-              {/* Glow ring */}
+              {/* Mid static ring */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: -9,
+                  borderRadius: "50%",
+                  border: "1px solid rgba(68,214,44,0.14)",
+                  pointerEvents: "none",
+                }}
+              />
+
+              {/* Cardinal tick marks (N E S W) on mid ring */}
+              {/* Top */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: -13,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 2,
+                  height: 9,
+                  background: RAZER_GREEN,
+                  borderRadius: 1,
+                  boxShadow: `0 0 6px ${RAZER_GREEN}`,
+                }}
+              />
+              {/* Right */}
+              <div
+                style={{
+                  position: "absolute",
+                  right: -13,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: 9,
+                  height: 2,
+                  background: RAZER_GREEN,
+                  borderRadius: 1,
+                  boxShadow: `0 0 6px ${RAZER_GREEN}`,
+                }}
+              />
+              {/* Bottom */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: -13,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 2,
+                  height: 9,
+                  background: RAZER_GREEN,
+                  borderRadius: 1,
+                  boxShadow: `0 0 6px ${RAZER_GREEN}`,
+                }}
+              />
+              {/* Left */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: -13,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: 9,
+                  height: 2,
+                  background: RAZER_GREEN,
+                  borderRadius: 1,
+                  boxShadow: `0 0 6px ${RAZER_GREEN}`,
+                }}
+              />
+
+              {/* Green glow layers behind image */}
               <div
                 style={{
                   position: "absolute",
                   inset: 0,
-                  borderRadius: 18,
-                  background: "rgba(56,189,248,.08)",
-                  transform: "scale(1.05)",
-                  filter: "blur(20px)",
+                  borderRadius: "50%",
+                  background: "rgba(68,214,44,0.18)",
+                  filter: "blur(32px)",
+                  transform: "scale(1.5)",
+                  pointerEvents: "none",
+                  animation: "glow-pulse 3s ease-in-out infinite",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "50%",
+                  background: "rgba(68,214,44,0.1)",
+                  filter: "blur(60px)",
+                  transform: "scale(2)",
+                  pointerEvents: "none",
                 }}
               />
 
+              {/* Circular image */}
               <div
-                className="animate-float hero-photo"
+                className="hero-photo"
                 style={{
                   position: "relative",
                   width: 300,
-                  height: 360,
-                  borderRadius: 18,
+                  height: 300,
+                  borderRadius: "50%",
                   overflow: "hidden",
-                  border: "1px solid rgba(56,189,248,.2)",
+                  border: "2px solid rgba(68,214,44,0.6)",
+                  boxShadow:
+                    "0 0 40px rgba(68,214,44,0.35), 0 0 80px rgba(68,214,44,0.12)",
                 }}
               >
                 <Image
@@ -631,62 +883,15 @@ export default function Home() {
                 />
                 {/* Scan overlay */}
                 <div className="scan-overlay" />
-                {/* Bottom gradient */}
+                {/* Bottom vignette */}
                 <div
                   style={{
                     position: "absolute",
                     inset: 0,
                     background:
-                      "linear-gradient(to top, rgba(3,9,20,.6) 0%, transparent 55%)",
+                      "linear-gradient(to top, rgba(2,2,2,.55) 0%, transparent 55%)",
                   }}
                 />
-              </div>
-
-              {/* Badge */}
-              <div
-                className="card mono hero-badge-bottom"
-                style={{
-                  position: "absolute",
-                  bottom: -18,
-                  left: -20,
-                  padding: "10px 16px",
-                  borderRadius: 10,
-                  border: "1px solid rgba(56,189,248,.3)",
-                  backdropFilter: "blur(10px)",
-                }}
-              >
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#38bdf8" }}>
-                  @ Stratedia
-                </p>
-                <p
-                  style={{ fontSize: 10, color: "var(--muted)", marginTop: 2 }}
-                >
-                  Sep 2024 – Jun 2026
-                </p>
-              </div>
-
-              {/* Tech floating tag */}
-              <div
-                className="card mono hero-badge-top"
-                style={{
-                  position: "absolute",
-                  top: -14,
-                  right: -20,
-                  padding: "8px 14px",
-                  borderRadius: 10,
-                  border: "1px solid rgba(245,158,11,.25)",
-                  backdropFilter: "blur(10px)",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: "var(--amber)",
-                  }}
-                >
-                  🛠 Full-Stack
-                </p>
               </div>
             </div>
           </div>
@@ -718,7 +923,7 @@ export default function Home() {
                 role: "Software Developer",
                 org: "Stratedia",
                 period: "Sep 2024 – Jun 2026",
-                accent: "#38bdf8",
+                accent: RAZER_GREEN,
                 items: [
                   "Built responsive websites with WordPress, Avada Theme, HTML, CSS, and JavaScript",
                   "Implemented SEO strategies improving search engine rankings and organic traffic",
@@ -732,7 +937,7 @@ export default function Home() {
                 role: "IT Support & Training",
                 org: "Ubiquity",
                 period: "Jun 2023 – Jul 2023",
-                accent: "#6366f1",
+                accent: RAZER_GREEN,
                 items: [
                   "Provided technical support and troubleshooting for computers, printers, and devices",
                   "Conducted IT training sessions for staff and customers",
@@ -750,7 +955,7 @@ export default function Home() {
                   borderLeft: `2px solid ${exp.accent}40`,
                 }}
               >
-                {/* Timeline dot — uses timeline-dot class for mobile offset */}
+                {/* Timeline dot */}
                 <div
                   className="timeline-dot"
                   style={{
@@ -923,6 +1128,7 @@ export default function Home() {
                           fontSize: 12,
                           padding: "8px 16px",
                           background: `linear-gradient(135deg, ${p.accentColor}, #1e40af)`,
+                          color: "#fff",
                         }}
                       >
                         Live ↗
@@ -940,7 +1146,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* project-featured-grid → collapses to 1-col on mobile */}
                 <div
                   style={{
                     display: "grid",
@@ -1148,7 +1353,6 @@ export default function Home() {
           <h2 className="section-title">Skills</h2>
         </div>
 
-        {/* Category grid — skills-grid collapses to 1-col on small screens */}
         <div
           className="skills-grid"
           style={{
@@ -1331,13 +1535,13 @@ export default function Home() {
                 school: "University of St. La Salle – Bacolod",
                 degree: "B.S. Computer Engineering",
                 period: "2020 – 2024",
-                color: "#38bdf8",
+                color: RAZER_GREEN,
               },
               {
                 school: "Fellowship Baptist College",
                 degree: "Senior High School",
                 period: "2014 – 2020",
-                color: "#6366f1",
+                color: RAZER_GREEN,
               },
             ].map((e) => (
               <div
@@ -1428,7 +1632,6 @@ export default function Home() {
             Achievements
           </h2>
 
-          {/* Featured achievement — achievement-featured-grid collapses on mobile */}
           <div
             className="card card-accent achievement-featured-grid"
             style={
@@ -1468,7 +1671,7 @@ export default function Home() {
                   position: "absolute",
                   inset: 0,
                   background:
-                    "linear-gradient(to top, rgba(8,15,31,.7) 0%, transparent 55%)",
+                    "linear-gradient(to top, rgba(10,10,10,.7) 0%, transparent 55%)",
                 }}
               />
             </div>
@@ -1593,19 +1796,19 @@ export default function Home() {
                 icon: "🎓",
                 label: "B.S. Computer Engineering",
                 sub: "University of St. La Salle – Bacolod · 2024",
-                color: "#38bdf8",
+                color: RAZER_GREEN,
               },
               {
                 icon: "💡",
                 label: "Real-Time Systems Builder",
                 sub: "WebRTC, mediasoup, Socket.io production apps",
-                color: "#6366f1",
+                color: RAZER_GREEN,
               },
               {
                 icon: "⚡",
                 label: "4+ Shipped Applications",
                 sub: "From mobile POS to AI-augmented platforms",
-                color: "#4ade80",
+                color: RAZER_GREEN,
               },
             ].map((a) => (
               <div
@@ -1690,21 +1893,21 @@ export default function Home() {
                 label: "Email",
                 value: "franztyrone072001@gmail.com",
                 href: "mailto:franztyrone072001@gmail.com",
-                color: "#38bdf8",
+                color: RAZER_GREEN,
               },
               {
                 icon: "in",
                 label: "LinkedIn",
                 value: "linkedin.com/in/franztyrone",
                 href: "https://linkedin.com/in/franztyrone",
-                color: "#6366f1",
+                color: RAZER_GREEN,
               },
               {
                 icon: "⌥",
                 label: "GitHub",
                 value: "github.com/FranzTyrone",
                 href: "https://github.com/FranzTyrone",
-                color: "#4ade80",
+                color: RAZER_GREEN,
               },
             ].map((c) => (
               <a
@@ -1781,24 +1984,20 @@ export default function Home() {
         style={{
           padding: "28px 24px",
           textAlign: "center",
-          borderTop: "1px solid rgba(56,189,248,.08)",
+          borderTop: "1px solid rgba(68,214,44,0.08)",
         }}
       >
-        <p className="mono" style={{ fontSize: 11, color: "#1e3a5f" }}>
+        <p className="mono" style={{ fontSize: 11, color: "#1a3d1a" }}>
           © 2026 Fran&apos;z Tyrone L. Jez De Ortega — Built with Next.js
         </p>
       </footer>
 
       <style>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        @keyframes marquee-ltr { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @keyframes marquee-rtl { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-        .skill-row-chip:hover { background: rgba(255,255,255,.06) !important; border-color: rgba(255,255,255,.15) !important; }
-        .skill-row-chip:hover span { color: #e2e8f0 !important; }
-        .skill-chip:hover { background: rgba(56,189,248,.14) !important; border-color: rgba(56,189,248,.45) !important; }
-        .skill-chip:hover span { color: #38bdf8 !important; }
-        .skill-chip-indigo:hover { background: rgba(99,102,241,.14) !important; border-color: rgba(99,102,241,.45) !important; }
-        .skill-chip-indigo:hover span { color: #818cf8 !important; }
+        @keyframes hud-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes glow-pulse { 0%,100%{opacity:1;transform:scale(1.5)} 50%{opacity:0.6;transform:scale(1.7)} }
+        .skill-row-chip:hover { background: rgba(68,214,44,0.08) !important; border-color: rgba(68,214,44,0.3) !important; }
+        .skill-row-chip:hover span { color: #44D62C !important; }
       `}</style>
     </div>
   );
