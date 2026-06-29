@@ -413,6 +413,19 @@ body {
   margin: 0;
 }
 
+/* ─── HUD WRAPPER ───────────────────────────────── */
+.hero-hud-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+
+/* ─── HERO GRID INNER ───────────────────────────── */
+.hero-grid-inner {
+  padding: 80px 24px;
+  gap: 56px;
+}
+
 /* ─── RESPONSIVE ────────────────────────────────── */
 .hide-mobile {
   display: flex;
@@ -429,8 +442,27 @@ body {
     display: block !important;
   }
 
+  /* Hero: single column, photo below text */
   .hero-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  .hero-grid-inner {
+    padding: 40px 20px 80px !important;
+    gap: 48px !important;
+  }
+
+  /* Center the HUD photo on mobile */
+  .hero-hud-wrapper {
+    width: 220px !important;
+    height: 220px !important;
+    margin: 0 auto;
+  }
+
+  /* Scale the actual circle image */
+  .hero-photo {
+    width: 220px !important;
+    height: 220px !important;
   }
 
   .project-featured-grid {
@@ -467,31 +499,43 @@ body {
     padding: 12px 14px;
   }
 
-  .hero-photo {
-    width: 220px !important;
-    height: 220px !important;
-  }
-
-  .hero-badge-bottom {
-    bottom: -14px !important;
-    left: 0 !important;
-  }
-  .hero-badge-top {
-    top: -10px !important;
-    right: 0 !important;
-  }
-
   .skills-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  /* Skills: full width on mobile */
+  .skills-grid > div {
+    min-width: unset !important;
   }
 }
 
 @media (max-width: 480px) {
+  .hero-grid-inner {
+    padding: 32px 16px 72px !important;
+    gap: 40px !important;
+  }
+
+  .hero-hud-wrapper {
+    width: 200px !important;
+    height: 200px !important;
+  }
+
+  .hero-photo {
+    width: 200px !important;
+    height: 200px !important;
+  }
+
   .skills-grid {
     grid-template-columns: 1fr !important;
   }
+
   .stat-chip {
     padding: 10px 12px;
+  }
+
+  /* Prevent horizontal scroll from card overflow */
+  .card-accent {
+    overflow: hidden;
   }
 }
 

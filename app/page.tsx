@@ -620,16 +620,14 @@ export default function Home() {
           style={{
             maxWidth: 1200,
             margin: "0 auto",
-            padding: "80px 24px",
             width: "100%",
             display: "grid",
             gridTemplateColumns: "1fr 1.1fr",
-            gap: 56,
             alignItems: "center",
             position: "relative",
             zIndex: 1,
           }}
-          className="hero-grid fade-up"
+          className="hero-grid hero-grid-inner fade-up"
         >
           {/* Left — Text */}
           <div>
@@ -648,7 +646,7 @@ export default function Home() {
 
             <h1
               style={{
-                fontSize: "clamp(2.8rem, 6vw, 4.5rem)",
+                fontSize: "clamp(2rem, 8vw, 4.5rem)",
                 fontWeight: 900,
                 lineHeight: 1.05,
                 marginBottom: 24,
@@ -753,7 +751,7 @@ export default function Home() {
               alignItems: "center",
             }}
           >
-            <div style={{ position: "relative", width: 300, height: 300 }}>
+            <div className="hero-hud-wrapper">
               {/* Outer rotating dashed ring */}
               <div
                 style={{
@@ -1987,7 +1985,7 @@ export default function Home() {
           borderTop: "1px solid rgba(68,214,44,0.08)",
         }}
       >
-        <p className="mono" style={{ fontSize: 11, color: "#1a3d1a" }}>
+        <p className="mono" style={{ fontSize: 11, color: "rgba(68,214,44,0.4)" }}>
           © 2026 Fran&apos;z Tyrone L. Jez De Ortega — Built with Next.js
         </p>
       </footer>
