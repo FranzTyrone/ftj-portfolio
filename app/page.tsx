@@ -844,6 +844,7 @@ export default function Home() {
                   filter: "blur(32px)",
                   transform: "scale(1.5)",
                   pointerEvents: "none",
+                  zIndex: 0,
                   animation: "glow-pulse 3s ease-in-out infinite",
                 }}
               />
@@ -856,6 +857,7 @@ export default function Home() {
                   filter: "blur(60px)",
                   transform: "scale(2)",
                   pointerEvents: "none",
+                  zIndex: 0,
                 }}
               />
 
@@ -871,13 +873,14 @@ export default function Home() {
                   border: "2px solid rgba(68,214,44,0.6)",
                   boxShadow:
                     "0 0 40px rgba(68,214,44,0.35), 0 0 80px rgba(68,214,44,0.12)",
+                  zIndex: 1,
                 }}
               >
                 <Image
                   src="/profile.png"
                   alt="Fran'z Tyrone Jez De Ortega"
                   fill
-                  className="object-cover"
+                  style={{ objectFit: "cover" }}
                   priority
                 />
                 {/* Scan overlay */}
